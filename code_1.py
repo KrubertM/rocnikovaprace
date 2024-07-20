@@ -1,90 +1,62 @@
-import pygame, random
-from sys import exit
-
+import pygame
+import random
 
 pygame.init()
-screen = pygame.display.set_mode((800,900))
-pygame.display.set_caption("STARSHIP")
+
+SCREEN_WIDTH = 400
+SCREEN_HEIGHT = 600
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("GALAGA")
+player = pygame.image.load("img/ship.png")
+player = pygame.transform.scale(player, (60, 60))
 clock = pygame.time.Clock()
-start_font = pygame.font.Font(None,50)
+run = True
+player_x = screen.get_width() // 2 - 30
+player_y = screen.get_height() - 100
+player_rect = pygame.Rect(player_x, player_y, 60, 60)
+SPEED = 5
+SCORE = 0
+bullets = []
 
-pozadi_hvezdy = pygame.image.load('Ročníková_Práce/img/vesmir-hvezdy.jpg')
-start_text = start_font.render('STARSHIP',False,'Blue')
+def create_bullet(x, y):
+    return pygame.Rect(x, y, 5, 10)
 
-hrac = pygame.image.load('Ročníková_Práce/img/lod.gif')
-ship_x_pos = 375
-ship_y_pos = 300
-
-
-#Životy
-HP = 3
-HP1 = pygame.image.load('Ročníková_Práce/img/lod.gif')
-HP2 = pygame.image.load('Ročníková_Práce/img/lod.gif')
-HP3 = pygame.image.load('Ročníková_Práce/img/lod.gif')
-
-
-enemyship = pygame.image.load('Ročníková_Práce/img/ufo.png')
-enemyship_x_pos = random.randint(25, 775)
-enemyship_y_pos = -50
-enemyship2 = pygame.image.load('Ročníková_Práce/img/ufo.png')
-enemyship_x_pos2 = enemyship_x_pos + 100
-enemyship_y_pos2 = -50
-enemyship3 = pygame.image.load('Ročníková_Práce/img/ufo.png')
-enemyship_x_pos3 = enemyship_x_pos2 + 100
-enemyship_y_pos3 = -50
-
-
-
-while True:
+while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-            
-            
-    enemyship_y_pos += 1
-    enemyship_y_pos2 += 1
-    enemyship_y_pos3 += 1
+            run = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                bullets.append(create_bullet(player_x + 27.5, player_y))
 
-    screen.blit(pozadi_hvezdy,(0,0))    
-    screen.blit(start_text,(300,50))
-    screen.blit(hrac,(ship_x_pos,ship_y_pos))
-    screen.blit(enemyship,(enemyship_x_pos,enemyship_y_pos))
-    screen.blit(enemyship2,(enemyship_x_pos2,enemyship_y_pos2))
-    screen.blit(enemyship3,(enemyship_x_pos3,enemyship_y_pos3))
-    screen.blit(HP1,(10,700))
-    screen.blit(HP2,(50,700))
-    screen.blit(HP3,(90,700))
+    screen.fill((255, 255, 255))
     
-    #Rychlost lodi
-   
-        
-        
-    #Strany pozice    
-    if ship_x_pos <= -50:
-        ship_x_pos = 800
-    if ship_x_pos >= 850:
-        ship_x_pos = 0
-    if ship_y_pos <= -80:
-        ship_y_pos = 400
-    if ship_y_pos >= 480:
-        ship_y_pos = -25
-        
-    #Enemy pozice
-    if enemyship_y_pos == 400:
-        enemyship_y_pos = -50
-        enemyship_x_pos = random.randint(25,775)
-        enemyship_y_pos2 = -50
-        enemyship_x_pos2 = enemyship_x_pos + 100
-        enemyship_y_pos3 = -50
-        enemyship_x_pos3 = enemyship_x_pos2 + 100
+    #pohyb
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_a]:
+        player_x -= SPEED
+    if keys[pygame.K_d]:
+        player_x += SPEED
 
-    #Kolize 
-    #if(ship_x_pos < (enemyship_x_pos + 80 ) or ship_x_pos > (enemyship_x_pos + 80)):
-    #    text_konec = 
-    #if(ship_y_pos < (enemyship_y_pos + 40) or ship_y_pos > (enemyship_y_pos + 40)):
+    #okraje
+    if player_x >= SCREEN_WIDTH - 60:
+        player_x = SCREEN_WIDTH - 60
+    if player_x <= 0:
+        player_x = 0
 
-    
-    
-    pygame.display.update()
+    # strileni
+    for bullet in bullets[:]:
+        bullet.y -= 10
+        if bullet.y < 0:
+            bullets.remove(bullet)
+    for bullet in bullets:
+        pygame.draw.rect(screen, (0, 0, 0), bullet)
+
+
+    screen.blit(player, (player_x, player_y))
+    pygame.display.flip()
+
     clock.tick(60)
+
+pygame.quit()
