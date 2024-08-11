@@ -6,7 +6,7 @@ SCREEN_WIDTH = 400
 SCREEN_HEIGHT = 600
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-background = pygame.image.load("img/th.jpeg")
+background = pygame.image.load("pozadi.png")
 background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 pygame.display.set_caption("GALAGA")
@@ -132,7 +132,7 @@ while run:
             if bullet.colliderect(enemy_rect):
                 current_enemies.remove(enemy_rect)
                 bullets.remove(bullet)
-                break
+                break 
 
     
     if player_x >= SCREEN_WIDTH - 60:
@@ -142,11 +142,12 @@ while run:
 
     if current_enemies == []:
         level += 1
+        enemy_speed += 0.5
 
     for bullet in bullets:
         pygame.draw.rect(screen, (255, 255, 255), bullet)
 
-    for enemy_obj in current_enemies:
+    for enemy_obj in current_enemies: 
         screen.blit(enemy, (enemy_obj.x, enemy_obj.y))
 
     screen.blit(player, (player_x, player_y))
@@ -155,3 +156,4 @@ while run:
     clock.tick(60)
 
 pygame.quit()
+
